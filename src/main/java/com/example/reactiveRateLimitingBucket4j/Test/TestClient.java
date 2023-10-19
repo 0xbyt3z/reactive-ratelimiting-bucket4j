@@ -1,6 +1,5 @@
 package com.example.reactiveRateLimitingBucket4j.Test;
 
-import com.example.reactivewebservice.Test;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
