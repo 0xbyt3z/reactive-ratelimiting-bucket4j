@@ -1,23 +1,39 @@
 package com.example.reactiveRateLimitingBucket4j.Test;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.ReactiveRedisOperations;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.server.HandlerFunction;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
-
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-@Component
+@RestController
 @Slf4j
+@RequiredArgsConstructor
 public class TestController {
+    private final ReactiveRedisOperations<String, Integer> redisOperations;
+    private final TestService testService;
 
-	public Mono<ServerResponse> hello(ServerRequest request) {
+    @GetMapping("/create")
+    public Flux<Boolean> create() {
+        return redisOperations.opsForValue().set("rate-limit", 5).flux();
+    }
 
 
-		return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-				.body(BodyInserters.fromValue(new Test("HI 123")));
-	}
+    @GetMapping("/limit")
+    public Flux<Integer> limit() {
+        return redisOperations.keys("rate-limit")
+                .flatMap(redisOperations.opsForValue()::get);
+
+    }
+
+    @GetMapping("/consume")
+    public Flux<Long> consume() {
+        return testService.consumeAToken();
+    }
 }
