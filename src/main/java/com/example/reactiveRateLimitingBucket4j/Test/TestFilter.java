@@ -29,10 +29,12 @@ public class TestFilter implements WebFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange serverWebExchange, WebFilterChain webFilterChain) {
         log.info("Filter Called");
-        this.testService.consumeAToken().subscribe();
+        this.testService.resolveBucket().subscribe();
         if (Objects.requireNonNull(serverWebExchange.getResponse().getStatusCode()).is2xxSuccessful()) {
 
         }
         return webFilterChain.filter(serverWebExchange);
     }
+
+
 }

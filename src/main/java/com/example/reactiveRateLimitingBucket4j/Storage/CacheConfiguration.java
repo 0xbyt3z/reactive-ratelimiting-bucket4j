@@ -1,5 +1,7 @@
 package com.example.reactiveRateLimitingBucket4j.Storage;
 
+import com.example.reactiveRateLimitingBucket4j.Entity.BucketEntity;
+import io.github.bucket4j.Bucket;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
@@ -15,13 +17,13 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @Configuration
 public class CacheConfiguration {
     @Bean
-    ReactiveRedisOperations<String, Integer> redisOperations(ReactiveRedisConnectionFactory factory) {
-        Jackson2JsonRedisSerializer<Integer> serializer = new Jackson2JsonRedisSerializer<>(Integer.class);
+    ReactiveRedisOperations<String, BucketEntity> redisOperations(ReactiveRedisConnectionFactory factory) {
+        Jackson2JsonRedisSerializer<BucketEntity> serializer = new Jackson2JsonRedisSerializer<>(BucketEntity.class);
 
-        RedisSerializationContext.RedisSerializationContextBuilder<String, Integer> builder =
+        RedisSerializationContext.RedisSerializationContextBuilder<String, BucketEntity> builder =
                 RedisSerializationContext.newSerializationContext(new StringRedisSerializer());
 
-        RedisSerializationContext<String, Integer> context = builder.value(serializer).build();
+        RedisSerializationContext<String, BucketEntity> context = builder.value(serializer).build();
 
         return new ReactiveRedisTemplate<>(factory, context);
     }
